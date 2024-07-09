@@ -8,6 +8,7 @@ namespace console_chess
         {
             Board board = new Board(8, 8);
 
+            Screen.PrintBoard(board);
         }
     }
 }
