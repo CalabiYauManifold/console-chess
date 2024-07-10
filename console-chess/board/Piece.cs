@@ -20,6 +20,11 @@
             MoveQuantity++;
         }
 
+        public void DecreaseMoveQuantity()
+        {
+            MoveQuantity--;
+        }
+
         public bool ExistsPossibleMoves()
         {
             bool[,] mat = PossibleMoves();
