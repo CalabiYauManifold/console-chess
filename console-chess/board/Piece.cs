@@ -14,5 +14,10 @@
             Board = board;
             MoveQuantity = 0;
         }
+
+        public void IncreaseMoveQuantity()
+        {
+            MoveQuantity++;
+        }
     }
 }

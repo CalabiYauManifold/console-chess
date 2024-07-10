@@ -9,15 +9,20 @@ namespace console_chess
         {
             try
             {
-                Board board = new Board(8, 8);
+                ChessMatch match = new ChessMatch();
 
-                board.SetPiece(new Rook(Color.Black, board), new Position(0, 0));
-                board.SetPiece(new Rook(Color.Black, board), new Position(1, 3));
-                board.SetPiece(new King(Color.Black, board), new Position(0, 2));
+                while (!match.Finished)
+                {
+                    Console.Clear();
+                    Screen.PrintBoard(match.Board);
 
-                board.SetPiece(new Rook(Color.White, board), new Position(3, 5));
+                    Console.Write("Origin: ");
+                    Position origin = Screen.ReadChessPosition().ToPosition();
+                    Console.Write("Destination: ");
+                    Position destination = Screen.ReadChessPosition().ToPosition();
 
-                Screen.PrintBoard(board);
+                    match.ExecuteMove(origin, destination);
+                }
             }
             catch (BoardException ex)
             {
