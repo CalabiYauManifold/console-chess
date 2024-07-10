@@ -1,12 +1,13 @@
 ﻿using board;
+using Microsoft.Win32.SafeHandles;
 
 namespace chess
 {
     internal class ChessMatch
     {
         public Board Board { get; private set; }
-        private int Turn;
-        private Color CurrentPlayer;
+        public int Turn { get; private set; }
+        public Color CurrentPlayer { get; private set; }
         public bool Finished { get; private set; }
 
         public ChessMatch()
@@ -24,6 +25,49 @@ namespace chess
             p.IncreaseMoveQuantity();
             Piece capturedPiece = Board.RemovePiece(destination);
             Board.SetPiece(p, destination);
+        }
+
+        public void MakePlay(Position origin, Position destination)
+        {
+            ExecuteMove(origin, destination);
+            Turn++;
+            ChangePlayer();
+        }
+
+        public void ValidateOriginPosition(Position pos)
+        {
+            if (Board.Piece(pos) == null)
+            {
+                throw new BoardException("There is no piece on the chosen origin position!");
+            }
+            if (CurrentPlayer != Board.Piece(pos).Color)
+            {
+                throw new BoardException("The chosen origin piece isn't yours!");
+            }
+            if (!Board.Piece(pos).ExistsPossibleMoves())
+            {
+                throw new BoardException("There is no possible moves for the chosen origin piece!");
+            }
+        }
+
+        public void ValidateDestinationOrigin(Position origin, Position destination)
+        {
+            if (!Board.Piece(origin).CanMoveTo(destination))
+            {
+                throw new BoardException("Invalid destination position!");
+            }
+        }
+
+        private void ChangePlayer()
+        {
+            if (CurrentPlayer == Color.White)
+            {
+                CurrentPlayer = Color.Black;
+            }
+            else
+            {
+                CurrentPlayer = Color.White;
+            }
         }
 
         private void SetPieces()
