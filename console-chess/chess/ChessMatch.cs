@@ -1,4 +1,5 @@
 ﻿using board;
+using console_chess.chess;
 
 namespace chess
 {
@@ -233,12 +234,33 @@ namespace chess
 
         private void SetPieces()
         {
-            SetNewPiece('c', 1, new Rook(Color.White, Board));
-            SetNewPiece('d', 1, new King(Color.White, Board));
-            SetNewPiece('h', 7, new Rook(Color.White, Board));
+            // White
+            SetNewPiece('a', 1, new Rook(Color.White, Board));
+            SetNewPiece('b', 1, new Knight(Color.White, Board));
+            SetNewPiece('c', 1, new Bishop(Color.White, Board));
+            SetNewPiece('d', 1, new Queen(Color.White, Board));
+            SetNewPiece('e', 1, new King(Color.White, Board));
+            SetNewPiece('f', 1, new Bishop(Color.White, Board));
+            SetNewPiece('g', 1, new Knight(Color.White, Board));
+            SetNewPiece('h', 1, new Rook(Color.White, Board));
+            for (char ch = 'a'; ch <= 'h'; ch++)
+            {
+                SetNewPiece(ch, 2, new Pawn(Color.White, Board));
+            }
 
-            SetNewPiece('a', 8, new King(Color.Black, Board));
-            SetNewPiece('b', 8, new Rook(Color.Black, Board));
+            // Black
+            SetNewPiece('a', 8, new Rook(Color.Black, Board));
+            SetNewPiece('b', 8, new Knight(Color.Black, Board));
+            SetNewPiece('c', 8, new Bishop(Color.Black, Board));
+            SetNewPiece('d', 8, new Queen(Color.Black, Board));
+            SetNewPiece('e', 8, new King(Color.Black, Board));
+            SetNewPiece('f', 8, new Bishop(Color.Black, Board));
+            SetNewPiece('g', 8, new Knight(Color.Black, Board));
+            SetNewPiece('h', 8, new Rook(Color.Black, Board));
+            for (char ch = 'a'; ch <= 'h'; ch++)
+            {
+                SetNewPiece(ch, 7, new Pawn(Color.Black, Board));
+            }
         }
     }
 }
