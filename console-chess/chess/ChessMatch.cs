@@ -1,5 +1,4 @@
 ﻿using board;
-using console_chess.chess;
 
 namespace chess
 {
@@ -12,6 +11,7 @@ namespace chess
         private HashSet<Piece> Pieces;
         private HashSet<Piece> Captured;
         public bool Check { get; private set; }
+        public Piece EnPassantVulnerable { get; private set; }
 
         public ChessMatch()
         {
@@ -20,6 +20,7 @@ namespace chess
             CurrentPlayer = Color.White;
             Finished = false;
             Check = false;
+            EnPassantVulnerable = null;
             Pieces = new HashSet<Piece>();
             Captured = new HashSet<Piece>();
             SetPieces();
@@ -56,6 +57,25 @@ namespace chess
                 Board.SetPiece(R, rookDestination);
             }
 
+            // Special move: 
+            if (p is Pawn)
+            {
+                if (origin.Column != destination.Column && capturedPiece == null)
+                {
+                    Position pawnPos;
+                    if (p.Color == Color.White)
+                    {
+                        pawnPos = new Position(destination.Line + 1, destination.Column);
+                    }
+                    else
+                    {
+                        pawnPos = new Position(destination.Line - 1, destination.Column);
+                    }
+                    capturedPiece = Board.RemovePiece(pawnPos);
+                    Captured.Add(capturedPiece);
+                }
+            }
+
             return capturedPiece;
         }
 
@@ -89,6 +109,25 @@ namespace chess
                 R.DecreaseMoveQuantity();
                 Board.SetPiece(R, rookOrigin);
             }
+
+            // Special move: en passant
+            if (p is Pawn)
+            {
+                if (origin.Column != destination.Column && capturedPiece == EnPassantVulnerable)
+                {
+                    Piece pawn = Board.RemovePiece(destination);
+                    Position pawnPos;
+                    if (p.Color == Color.White)
+                    {
+                        pawnPos = new Position(3, destination.Column);
+                    }
+                    else
+                    {
+                        pawnPos = new Position(4, destination.Column);
+                    }
+                    Board.SetPiece(pawn, pawnPos);
+                }
+            }
         }
 
         public void MakePlay(Position origin, Position destination)
@@ -119,6 +158,17 @@ namespace chess
             {
                 Turn++;
                 ChangePlayer();
+            }
+
+            // Special move: en passant
+            Piece p = Board.Piece(destination);
+            if (p is Pawn && (destination.Line == origin.Line - 2 || destination.Line == origin.Line + 2))
+            {
+                EnPassantVulnerable = p;
+            }
+            else
+            {
+                EnPassantVulnerable = null;
             }
         }
 
@@ -284,7 +334,7 @@ namespace chess
             SetNewPiece('h', 1, new Rook(Color.White, Board));
             for (char ch = 'a'; ch <= 'h'; ch++)
             {
-                SetNewPiece(ch, 2, new Pawn(Color.White, Board));
+                SetNewPiece(ch, 2, new Pawn(Color.White, Board, this));
             }
 
             // Black
@@ -298,7 +348,7 @@ namespace chess
             SetNewPiece('h', 8, new Rook(Color.Black, Board));
             for (char ch = 'a'; ch <= 'h'; ch++)
             {
-                SetNewPiece(ch, 7, new Pawn(Color.Black, Board));
+                SetNewPiece(ch, 7, new Pawn(Color.Black, Board, this));
             }
         }
     }

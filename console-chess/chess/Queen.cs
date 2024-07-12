@@ -1,6 +1,6 @@
 ﻿using board;
 
-namespace console_chess.chess
+namespace chess
 {
     internal class Queen : Piece
     {
