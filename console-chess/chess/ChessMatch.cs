@@ -141,6 +141,20 @@ namespace chess
                 throw new BoardException("You can't put yourself in check");
             }
 
+            Piece p = Board.Piece(destination);
+            // Special move: promotion
+            if (p is Pawn)
+            {
+                if ((p.Color == Color.White && destination.Line == 0) || (p.Color == Color.Black && destination.Line == 7))
+                {
+                    p = Board.RemovePiece(destination);
+                    Pieces.Remove(p);
+                    Piece queen = new Queen(p.Color, Board);
+                    Board.SetPiece(queen, destination);
+                    Pieces.Add(queen);
+                }
+            }
+
             if (OnCheck(Opponent(CurrentPlayer)))
             {
                 Check = true;
@@ -161,7 +175,6 @@ namespace chess
             }
 
             // Special move: en passant
-            Piece p = Board.Piece(destination);
             if (p is Pawn && (destination.Line == origin.Line - 2 || destination.Line == origin.Line + 2))
             {
                 EnPassantVulnerable = p;
