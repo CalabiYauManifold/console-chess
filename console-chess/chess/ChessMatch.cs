@@ -8,10 +8,11 @@ namespace chess
         public int Turn { get; private set; }
         public Color CurrentPlayer { get; private set; }
         public bool Finished { get; private set; }
+        public bool Check { get; private set; }
+        public Piece PieceToPromotion { get; private set; }
+        public Piece EnPassantVulnerable { get; private set; }
         private HashSet<Piece> Pieces;
         private HashSet<Piece> Captured;
-        public bool Check { get; private set; }
-        public Piece EnPassantVulnerable { get; private set; }
 
         public ChessMatch()
         {
@@ -20,6 +21,7 @@ namespace chess
             CurrentPlayer = Color.White;
             Finished = false;
             Check = false;
+            PieceToPromotion = null;
             EnPassantVulnerable = null;
             Pieces = new HashSet<Piece>();
             Captured = new HashSet<Piece>();
@@ -57,7 +59,7 @@ namespace chess
                 Board.SetPiece(R, rookDestination);
             }
 
-            // Special move: 
+            // Special move: en passant
             if (p is Pawn)
             {
                 if (origin.Column != destination.Column && capturedPiece == null)
@@ -147,11 +149,32 @@ namespace chess
             {
                 if ((p.Color == Color.White && destination.Line == 0) || (p.Color == Color.Black && destination.Line == 7))
                 {
+                    Console.WriteLine("PROMOTION: \n Choose a piece to promote (Q R B N): ");
+                    char pieceId = char.Parse(Console.ReadLine().ToUpper());
+
+                    switch (pieceId)
+                    {
+                        case 'Q':
+                            PieceToPromotion = new Queen(p.Color, Board);
+                            break;
+                        case 'R':
+                            PieceToPromotion = new Rook(p.Color, Board);
+                            break;
+                        case 'B':
+                            PieceToPromotion = new Bishop(p.Color, Board);
+                            break;
+                        case 'N':
+                            PieceToPromotion = new Knight(p.Color, Board);
+                            break;
+                        default:
+                            throw new BoardException("Invalid chosen piece!");
+                    }
+
                     p = Board.RemovePiece(destination);
                     Pieces.Remove(p);
-                    Piece queen = new Queen(p.Color, Board);
-                    Board.SetPiece(queen, destination);
-                    Pieces.Add(queen);
+                    Piece promotedPawn = PieceToPromotion;
+                    Board.SetPiece(promotedPawn, destination);
+                    Pieces.Add(promotedPawn);
                 }
             }
 
